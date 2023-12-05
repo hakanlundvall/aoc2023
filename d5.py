@@ -1,7 +1,6 @@
 lines = open('i5.txt').read().split('\n\n')
 # lines = open('e5.txt').read().split('\n\n')
 seeds = [int(x) for x in lines[0].split(':')[1].strip().split(' ')]
-# print(seeds)
 
 def get_map(part):
     return [ [int(y) for y in x.strip().split()] for x in part.splitlines()[1:]]
@@ -26,7 +25,6 @@ def solve(seeds):
 print(solve(seeds))
 
 def solve2(seed_ranges):
-    paths = []
     s = seed_ranges[:]
 
     def split_intervals(a, b):
@@ -57,8 +55,6 @@ def solve2(seed_ranges):
             else:
                 ranges3.append((s,l))
         return ranges3
-
-
 
     for m in maps:
         s = get_next(s, m)
