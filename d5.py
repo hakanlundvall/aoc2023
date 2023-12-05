@@ -65,7 +65,9 @@ def solve2(seed_ranges):
 
     return sorted([x[0] for x in s])[0]
 
-start = seeds[::2]
-length = seeds[1::2]
-print(solve2(list(zip(start, length))))
+length1 = [1] * len(seeds)
+print(solve2(list(zip(seeds, length1))))
+start2 = seeds[::2]
+length2 = seeds[1::2]
+print(solve2(list(zip(start2, length2))))
 
