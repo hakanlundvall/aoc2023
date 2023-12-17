@@ -8,6 +8,8 @@ for r, line in enumerate(data):
         m[(r,c)] = (char, [])
 max_r = len(data)
 max_c = len(data[0])
+
+start_dict = m.copy()
         
 def take_step(pos, dir):
     r,c = pos
@@ -23,10 +25,8 @@ def take_step(pos, dir):
         return None
     return (r,c)
 
-m[(0,-1)] = ('.', [])
-beams = [((0,-1), 0)]
 
-def follow_beam(b):
+def follow_beam(b, m):
     pos, dir = b
     tile, dirs = m[pos]
     if dir in dirs:
@@ -37,40 +37,56 @@ def follow_beam(b):
     if not next_pos:
         return
     tile, dirs = m[next_pos]
+
     if tile == '.':
-        follow_beam((next_pos, dir))
+        follow_beam((next_pos, dir), m)
     elif tile == '|':
         if dir in [0, 2]:
             dl = (dir+3)%4
             d2 = (dir+1)%4
             for dn in [dl, d2]:
-                follow_beam((next_pos, dn))
+                follow_beam((next_pos, dn), m)
         else:
-            follow_beam((next_pos, dir))        
+            follow_beam((next_pos, dir), m)        
     elif tile == '-':
         if dir in [1, 3]:
             dl = (dir+3)%4
             d2 = (dir+1)%4
             for dn in [dl, d2]:
-                follow_beam((next_pos, dn))
+                follow_beam((next_pos, dn), m)
         else:
-            follow_beam((next_pos, dir))        
+            follow_beam((next_pos, dir), m)        
     elif tile == '/':
         if dir in [0, 2]:
-            follow_beam((next_pos, (dir+3)%4))
+            follow_beam((next_pos, (dir+3)%4), m)
         else:
-            follow_beam((next_pos, (dir+1)%4))
+            follow_beam((next_pos, (dir+1)%4), m)
 
     elif tile == '\\':
         if dir in [0, 2]:
-            follow_beam((next_pos, (dir+1)%4))
+            follow_beam((next_pos, (dir+1)%4), m)
         else:
-            follow_beam((next_pos, (dir+3)%4))
+            follow_beam((next_pos, (dir+3)%4), m)
 
-for p in beams:
-    follow_beam(p)
+def start(start_pos, start_dir):
+    m = start_dict.copy()
+    m[start_pos] = ('.', [])
 
-del m[(0,-1)]
+    follow_beam((start_pos, start_dir), m)
+
+    del m[start_pos]
+
+    return sum([1 for pos, dirs in m.items() if len(dirs[1]) > 0])
 
 
-print(sum([1 for pos, dirs in m.items() if len(dirs[1]) > 0]))
+
+print(start((0,-1), 0))
+candidates = []
+for r in range(max_r):
+    candidates.append(start((r,-1), 0))
+    candidates.append(start((r,max_c), 2))
+for c in range(max_c):
+    candidates.append(start((-1,c), 1))
+    candidates.append(start((max_r,c), 3))
+
+print(max(candidates))
