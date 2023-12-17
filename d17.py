@@ -8,8 +8,6 @@ for r, line in enumerate(data):
 max_r = len(data)
 max_c = len(data[0])
         
-state = (0, 0, 0, (0,0))
-
 def at_target(state):
     heat, steps, dir, pos = state
     r,c = pos
@@ -31,23 +29,25 @@ def take_step(pos, dir):
         return None
     return (r,c)
 
-def next_states(state):
+def next_states(state, part2 = False):
     heat, steps, dir, pos = state
     r,c = pos
-    if steps < 3:
+    
+    if steps < (10 if part2 else 3):
         next_pos = take_step(pos, dir)
         if next_pos:
             yield (heat+m[next_pos], steps+1, dir, next_pos)
-    dir = (dir+1)%4
-    next_pos  = take_step(pos, dir)
-    if next_pos:
-        yield (heat+m[next_pos], 1, dir, next_pos)
-    dir = (dir+2)%4
-    next_pos  = take_step(pos, dir)
-    if next_pos:
-        yield (heat+m[next_pos], 1, dir, next_pos)
+    if not part2 or (steps == 0 or steps >= 4):
+        dir = (dir+1)%4
+        next_pos  = take_step(pos, dir)
+        if next_pos:
+            yield (heat+m[next_pos], 1, dir, next_pos)
+        dir = (dir+2)%4
+        next_pos  = take_step(pos, dir)
+        if next_pos:
+            yield (heat+m[next_pos], 1, dir, next_pos)
 
-def bfs(state):
+def bfs(state, part2 = False):
     queue = PriorityQueue()
     queue.put(state)
     visited = dict()
@@ -62,7 +62,8 @@ def bfs(state):
             continue
         if at_target(state):
             return state
-        for next_state in next_states(state):
+        for next_state in next_states(state, part2):
             queue.put(next_state)
-    
-print(bfs(state))
+
+for part2 in [False, True]:
+    print(bfs((0, 0, 0, (0,0)), part2)[0])
